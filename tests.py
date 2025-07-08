@@ -26,6 +26,13 @@ class TestGetFiles(unittest.TestCase):
         # print(f"This is a dur {is_dir}")
         self.assertEqual(is_dir, True)
 
+    def test_is_not_dir(self):
+        result, dir = get_files_info("calculator", "pkgf")
+        correct = f'Error: "{dir}" is not a directory'
+        # print(f"result is {result}")
+        # print(f"This is a dur {is_dir}")
+        self.assertEqual(result, correct)
+
     def test_if_dir_is_within_working_directory(self):
         err,working_dir,dir = get_files_info("calculator", "/bin")
         correct = f'Error: "{dir}" is not a directory'

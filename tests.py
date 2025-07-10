@@ -6,6 +6,13 @@ from dotenv import load_dotenv
 class TestGetFiles(unittest.TestCase):
     # Load abs path from env to project abs path details   
     load_dotenv()
+    def test_valid_case_print_content(self):
+        path = get_files_info("calculator", "pkg")
+        # correct = os.environ.get("TEST_PATH")
+        # print(f"result is {path}")
+        # self.assertEqual(path, correct)
+
+
     def test_path_creation(self):
         path = get_files_info("calculator", "pkg")
         correct = os.environ.get("TEST_PATH")

@@ -26,7 +26,19 @@ def get_files_info(working_directory, directory=None):
     if directory not in working_dir_contents:
         err = f'Error: "{directory}" is not a directory'
         return(err, working_directory, directory)
-
+    
+    # Case of a valid directory
+    # Will need to loop over working_dir_contents and use an os function to print details
+    directory_contents = os.listdir(abs_path)
+    content = []
+    if directory in working_dir_contents and is_directory:
+        for item in directory_contents:
+            file_path = path = os.path.join(abs_path, item)
+            # Refactor repetitive directory path checks into a dedicated function to minimize code duplication 
+            # and align with the "Write Once, Run Anywhere" principle.
+            # TODO - Write a modular function for checking if somethig is a dir
+            print(f"- {item}: {os.path.getsize(os.path.abspath(file_path))}, is_dir={os.path.isdir(file_path)}")
+        # print(directory_contents)
 
 
     return abs_path

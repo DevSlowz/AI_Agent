@@ -14,56 +14,78 @@ def get_files_info(working_directory, directory=None):
     path = os.path.join(working_directory, directory)
     abs_path = os.path.abspath(path)
 
-    # Check if a valid dirtory is given
-    # This can be its own func - easy testing
-    is_directory = os.path.isdir(abs_path)
-    if not is_directory:
-        err = f'Error: "{directory}" is not a directory'
-        return(err, directory)
+    # # Check if a valid dirtory is given
+    # # This can be its own func - easy testing
+    # is_directory = os.path.isdir(abs_path)
+    # if not is_directory:
+    #     err = f'Error: "{directory}" is not a directory'
+    #     return(err, directory)
     
-    valid_directory, err = verify_directory_path(abs_path)
-    if valid_directory and len(err) == 0:
-        inscope, err = restrict_to_working_directory(working_dir, directory)
-    # Check if path is in the scope of the working_directory
-    # This can be its own func - easy testing
-    working_dir_contents = os.listdir(working_dir)
-    if directory not in working_dir_contents:
-        err = f'Error: "{directory}" is not a directory'
-        return(err, working_directory, directory)
+    # valid_directory, err = verify_directory_path(abs_path)
+    # if valid_directory and len(err) == 0:
+    #     inscope, err = restrict_to_working_directory(working_dir, directory)
+    # # Check if path is in the scope of the working_directory
+    # # This can be its own func - easy testing
+    # working_dir_contents = os.listdir(working_dir)
+    # if directory not in working_dir_contents:
+    #     err = f'Error: "{directory}" is not a directory'
+    #     return(err, working_directory, directory)
+
+    valid, err = valid_directory(working_directory, directory)
+    if not valid and len(err) > 0:
+        print(err)
+    
+    # Print
+    print_directory_content(abs_path)
+
     
     # Case of a valid directory
     # Will need to loop over working_dir_contents and use an os function to print details
-    directory_contents = os.listdir(abs_path)
-    content = []
-    if directory in working_dir_contents and is_directory:
-        for item in directory_contents:
-            file_path = path = os.path.join(abs_path, item)
-            item = item.strip('.')
-            # Refactor repetitive directory path checks into a dedicated function to minimize code duplication 
-            # and align with the "Write Once, Run Anywhere" principle.
-            # TODO - Write a modular function for checking if somethig is a dirß
-            print(f"- {item}: {os.path.getsize(os.path.abspath(file_path))} bytes, is_dir={os.path.isdir(file_path)}")
+    # directory_contents = os.listdir(abs_path)
+    # content = []
+    # if directory in working_dir_contents and is_directory:
+        # for item in directory_contents:
+        #     file_path = path = os.path.join(abs_path, item)
+        #     item = item.strip('.')
+        #     # Refactor repetitive directory path checks into a dedicated function to minimize code duplication 
+        #     # and align with the "Write Once, Run Anywhere" principle.
+        #     # TODO - Write a modular function for checking if somethig is a dirß
+        #     print(f"- {item}: {os.path.getsize(os.path.abspath(file_path))} bytes, is_dir={os.path.isdir(file_path)}")
         # print(f"{directory_contents}")
 
 
     return abs_path
 
-      
-    # Check if path is in the scope of the working_directory
-    # This can be its own func - easy testing
+
+def print_directory_content(path):
+    try:
+        directory_contents = os.listdir(path)
+    except Exception as e:
+       print(f"Error accessing directory '{path}': {str(e)}")
+
+    for item in directory_contents:
+        file_path = path = os.path.join(path, item)
+        item = item.strip('.')
+        # Refactor repetitive directory path checks into a dedicated function to minimize code duplication 
+        # and align with the "Write Once, Run Anywhere" principle.
+        # TODO - Write a modular function for checking if somethig is a dirß
+        print(f"- {item}: {os.path.getsize(os.path.abspath(file_path))} bytes, is_dir={os.path.isdir(file_path)}")
 
     
 # Check if a valid dirtory is given
 def verify_directory_path(path):
+    if not isinstance(path, str):
+        return (False, f"Invalid path: '{path}'. Path must be a string.") 
+    
     try:
-        is_directory = os.path.isdir(path)
+        if not os.path.exists(path):
+            return (False, f"Path does not exist: '{path}'.")
+        if not os.path.isdir(path):
+            return (False, f"Path is not a directory: '{path}'.")
+        return (True, "")
+    # Catch odd edge cases - permission error
     except Exception as e:
-       err = f"Invalid path: '{path}'. Ensure the path is a valid string and accessible. Error: {str(e)}"
-       return(False, err)
-    if not is_directory:
-        err = f'Error: "{is_directory}" is not a directory'
-        return(False, err)
-    return (True, "")
+        return (False, f"Invalid path: '{path}'. Error: {str(e)}")
 
 # Verifiy given directory is within working_directory scope
 def restrict_to_working_directory(working_directory, directory):
@@ -75,7 +97,7 @@ def restrict_to_working_directory(working_directory, directory):
     
     if directory not in working_dir_contents:
         err = f'Error: "{directory}" is not a directory'
-        return(err, working_directory, directory)
+        return(False,err, working_directory, directory)
     
     return (True, "")
 

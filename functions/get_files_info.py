@@ -14,12 +14,6 @@ def get_files_info(working_directory, directory=None):
     # path = os.path.join(working_directory, directory)
     # abs_path = os.path.abspath(path)
 
-    # # Check if a valid dirtory is given
-    # # This can be its own func - easy testing
-    # is_directory = os.path.isdir(abs_path)
-    # if not is_directory:
-    #     err = f'Error: "{directory}" is not a directory'
-    #     return(err, directory)
     
     results  = valid_directory(working_directory, directory)
     # print(results)

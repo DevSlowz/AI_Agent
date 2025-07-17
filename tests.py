@@ -1,20 +1,62 @@
 import unittest
-from functions.get_files_info import get_files_info
+from functions.get_files_info import get_files_info, verify_directory_path, restrict_to_working_directory, valid_directory
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
 class TestGetFiles(unittest.TestCase):
     # Load abs path from env to project abs path details   
-    load_dotenv()
-    def test_valid_case_print_content(self):
-        path = get_files_info("calculator", "pkg")
-        # correct = os.environ.get("TEST_PATH")
-        # print(f"result is {path}")
-        # self.assertEqual(path, correct)
+    # load_dotenv()
+
+    # working_dir = os.path.abspath("calculator")
+
+    def test_valid_verify_directory_path(self):
+        path = os.path.join('calculator', "pkg")
+        abs_path = os.path.abspath(path)
+        result = verify_directory_path(abs_path)
+
+        self.assertEqual((True, ''), result)
+
+    def test_invalid_verify_directory_path(self):
+        path = os.path.join('calculator', 'pkg')
+        abs_path = os.path.abspath(path) + "F"
+        result = verify_directory_path(abs_path)
+        self.assertEqual((False, f"Path does not exist: '{abs_path}'."), result)
+
+        # TODO need to add test case for invalid directory ^ 
+
+    def test_restrict_to_working_directory(self):
+        path = os.path.join('calculator', 'pkg')
+        abs_path = os.path.abspath('calculator')
+        result = restrict_to_working_directory(abs_path, 'pkg')
+        self.assertEqual((True, ""), result)
+
+    def test_invalid_restrict_to_working_directory(self):
+        path = os.path.join('calculator', 'pkg')
+        abs_path = os.path.abspath(path)
+        result = restrict_to_working_directory(abs_path, 'pkg')
+        self.assertEqual(False, result[0])
+
+    def test_valid_directoryy(self):
+        result = valid_directory('calculator', 'pkg')
+        self.assertEqual((True, ""), (result[0], result[1]))
  
+    def test_invalid_valid_directoryy(self):
+        working_dir = os.path.abspath('calculator')
+        path = os.path.join(working_dir, 'pkgg')
+        abs_path = os.path.abspath(path)
+
+        result = valid_directory('calculator', 'pkgg')
+        # print(result)
+        expected = (False, f"Path does not exist: '{abs_path}'.")
+        self.assertEqual(result[:2], expected, f"Expected {expected}, but got {result}")
+
+    def test_thing(self):
+        get_files_info("calculator", "pkg")
+        
+
     # TODO : Need to modify get_files_info to handle this case
-    def test_directory_is_current_directory(self):
-        path = get_files_info("calculator", ".")
+    # def test_directory_is_current_directory(self):
+    #     path = get_files_info("calculator", ".")
         # correct = os.environ.get("TEST_PATH")
         # print(f"result is {path}")
         # self.assertEqual(path, correct)

@@ -10,9 +10,9 @@ def get_files_info(working_directory, directory=None):
 
     # NOTE: Return statements will need to be print statements that way the agent can try to determine the error
     # NOTE: Might want to consider not storing err messages multiple times to avoid rewrite the variable
-    working_dir = os.path.abspath(working_directory)
-    path = os.path.join(working_directory, directory)
-    abs_path = os.path.abspath(path)
+    # working_dir = os.path.abspath(working_directory)
+    # path = os.path.join(working_directory, directory)
+    # abs_path = os.path.abspath(path)
 
     # # Check if a valid dirtory is given
     # # This can be its own func - easy testing
@@ -21,8 +21,12 @@ def get_files_info(working_directory, directory=None):
     #     err = f'Error: "{directory}" is not a directory'
     #     return(err, directory)
     
-    # valid_directory, err = verify_directory_path(abs_path)
-    # if valid_directory and len(err) == 0:
+    results  = valid_directory(working_directory, directory)
+    # print(results)
+    if results[0] and len(results[1]) == 0:
+        print_directory_content(results[2])
+    else:
+        print(results[1])
     #     inscope, err = restrict_to_working_directory(working_dir, directory)
     # # Check if path is in the scope of the working_directory
     # # This can be its own func - easy testing
@@ -31,12 +35,12 @@ def get_files_info(working_directory, directory=None):
     #     err = f'Error: "{directory}" is not a directory'
     #     return(err, working_directory, directory)
 
-    valid, err = valid_directory(working_directory, directory)
-    if not valid and len(err) > 0:
-        print(err)
+    # valid, err = valid_directory(working_directory, directory)
+    # if not valid and len(err) > 0:
+    #     print(err)
     
     # Print
-    print_directory_content(abs_path)
+    # print_directory_content(abs_path)
 
     
     # Case of a valid directory
@@ -54,7 +58,7 @@ def get_files_info(working_directory, directory=None):
         # print(f"{directory_contents}")
 
 
-    return abs_path
+    # return abs_path
 
 
 def print_directory_content(path):
@@ -64,7 +68,7 @@ def print_directory_content(path):
        print(f"Error accessing directory '{path}': {str(e)}")
 
     for item in directory_contents:
-        file_path = path = os.path.join(path, item)
+        file_path = os.path.join(path, item)
         item = item.strip('.')
         # Refactor repetitive directory path checks into a dedicated function to minimize code duplication 
         # and align with the "Write Once, Run Anywhere" principle.
@@ -79,6 +83,7 @@ def verify_directory_path(path):
     
     try:
         if not os.path.exists(path):
+            # print(f"verify_directory_path - {path}")
             return (False, f"Path does not exist: '{path}'.")
         if not os.path.isdir(path):
             return (False, f"Path is not a directory: '{path}'.")
@@ -95,9 +100,10 @@ def restrict_to_working_directory(working_directory, directory):
         err = f"Failed to list contents of '{working_directory}': {str(e)}. Ensure the path is valid and accessible."
         return(False, err)
     
-    if directory not in working_dir_contents:
+    if directory not in working_dir_contents and directory != ".":
         err = f'Error: "{directory}" is not a directory'
-        return(False,err, working_directory, directory)
+        # return(False,err, working_directory, directory)
+        return(False,err)
     
     return (True, "")
 
@@ -106,12 +112,13 @@ def valid_directory(working_directory, directory):
     path = os.path.join(working_directory, directory)
     abs_path = os.path.abspath(path)
 
+    # print(f"valid_directory - {abs_path}")
     # Check if a valid dirtory is given
     valid_directory, err = verify_directory_path(abs_path)
     if valid_directory and len(err) == 0:
         inscope, err = restrict_to_working_directory(working_dir, directory)
 
         if inscope and len(err) == 0:
-            return (True, "")
+            return (True, "", abs_path)
         
-    return (False, err)
+    return (False, err, abs_path)

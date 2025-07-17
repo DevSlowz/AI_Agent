@@ -50,9 +50,17 @@ class TestGetFiles(unittest.TestCase):
         expected = (False, f"Path does not exist: '{abs_path}'.")
         self.assertEqual(result[:2], expected, f"Expected {expected}, but got {result}")
 
-    def test_thing(self):
+    def test_get_files_info_calculator(self):
+        get_files_info("calculator", ".")
+
+    def test_get_files_info_calculator_pkg(self):
         get_files_info("calculator", "pkg")
         
+    def test_get_files_info_calculator_bin(self):
+        get_files_info("calculator", "/bin")
+
+    def test_get_files_info_calculator_outside_directroy(self):
+        get_files_info("calculator", "../")
 
     # TODO : Need to modify get_files_info to handle this case
     # def test_directory_is_current_directory(self):

@@ -11,6 +11,18 @@ def get_file_content(working_directory, file_path):
     # print(f"PATH = {path}")
     # print(is_file)
 
+    is_valid = verify_file_path(working_directory, file_path)
+
+    # It len > 2 it contains a error 
+    if len(is_valid[1]) > 0:
+        print(is_valid[1])
+        print(f'is_valid = {is_valid}')
+    else:
+       test = read_file(path)
+       print(test)
+
+    
+
 
 def verify_file_path(working_directory, file_path):
     # dir_content = os.listdir(working_directory)
@@ -41,5 +53,16 @@ def verify_file_path(working_directory, file_path):
         return(False, f'Error: {e}')
     
     
-    return("CORRECT")
+    return(True, "")
 
+
+def read_file(file_path):
+    MAX_CHARS = 10000
+    
+    with open(file_path, "r") as f:
+        file_content_string = f.read(MAX_CHARS)
+
+        if f.read(1):
+            return(f"{(file_content_string)}{f'[...File "{file_path}" truncated at 10000 characters]'}")
+            
+    return file_content_string

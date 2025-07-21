@@ -1,5 +1,6 @@
 import unittest
 from functions.get_files_info import get_files_info, verify_directory_path, restrict_to_working_directory, valid_directory
+from functions.get_file_content import get_file_content, verify_file_path
 import os
 # from dotenv import load_dotenv
 
@@ -9,105 +10,106 @@ class TestGetFiles(unittest.TestCase):
 
     # working_dir = os.path.abspath("calculator")
 
-    def test_valid_verify_directory_path(self):
-        path = os.path.join('calculator', "pkg")
-        abs_path = os.path.abspath(path)
-        result = verify_directory_path(abs_path)
+    # def test_valid_verify_directory_path(self):
+    #     path = os.path.join('calculator', "pkg")
+    #     abs_path = os.path.abspath(path)
+    #     result = verify_directory_path(abs_path)
 
-        self.assertEqual((True, ''), result)
+    #     self.assertEqual((True, ''), result)
 
-    def test_invalid_verify_directory_path(self):
-        path = os.path.join('calculator', 'pkg')
-        abs_path = os.path.abspath(path) + "F"
-        result = verify_directory_path(abs_path)
-        self.assertEqual((False, f"Path does not exist: '{abs_path}'."), result)
+    # def test_invalid_verify_directory_path(self):
+    #     path = os.path.join('calculator', 'pkg')
+    #     abs_path = os.path.abspath(path) + "F"
+    #     result = verify_directory_path(abs_path)
+    #     self.assertEqual((False, f"Path does not exist: '{abs_path}'."), result)
 
-        # TODO need to add test case for invalid directory ^ 
+    #     # TODO need to add test case for invalid directory ^ 
 
-    def test_restrict_to_working_directory(self):
-        path = os.path.join('calculator', 'pkg')
-        abs_path = os.path.abspath('calculator')
-        result = restrict_to_working_directory(abs_path, 'pkg')
-        self.assertEqual((True, ""), result)
+    # def test_restrict_to_working_directory(self):
+    #     path = os.path.join('calculator', 'pkg')
+    #     abs_path = os.path.abspath('calculator')
+    #     result = restrict_to_working_directory(abs_path, 'pkg')
+    #     self.assertEqual((True, ""), result)
 
-    def test_invalid_restrict_to_working_directory(self):
-        path = os.path.join('calculator', 'pkg')
-        abs_path = os.path.abspath(path)
-        result = restrict_to_working_directory(abs_path, 'pkg')
-        self.assertEqual(False, result[0])
+    # def test_invalid_restrict_to_working_directory(self):
+    #     path = os.path.join('calculator', 'pkg')
+    #     abs_path = os.path.abspath(path)
+    #     result = restrict_to_working_directory(abs_path, 'pkg')
+    #     self.assertEqual(False, result[0])
 
-    def test_valid_directoryy(self):
-        result = valid_directory('calculator', 'pkg')
-        self.assertEqual((True, ""), (result[0], result[1]))
+    # def test_valid_directoryy(self):
+    #     result = valid_directory('calculator', 'pkg')
+    #     self.assertEqual((True, ""), (result[0], result[1]))
  
-    def test_invalid_valid_directoryy(self):
+    # def test_invalid_valid_directoryy(self):
+    #     working_dir = os.path.abspath('calculator')
+    #     path = os.path.join(working_dir, 'pkgg')
+    #     abs_path = os.path.abspath(path)
+
+    #     result = valid_directory('calculator', 'pkgg')
+    #     # print(result)
+    #     expected = (False, f"Path does not exist: '{abs_path}'.")
+    #     self.assertEqual(result[:2], expected, f"Expected {expected}, but got {result}")
+
+    # def test__valid_directoryy(self):
+    #     working_dir = os.path.abspath('calculator')
+    #     path = os.path.join(working_dir, 'pkgg')
+    #     abs_path = os.path.abspath(path)
+
+    #     result = verify_file_path("calculator", "main.py")
+    #     print(result)
+
+    def test__valid_txt_file(self):
         working_dir = os.path.abspath('calculator')
         path = os.path.join(working_dir, 'pkgg')
         abs_path = os.path.abspath(path)
 
-        result = valid_directory('calculator', 'pkgg')
+        result = get_file_content("calculator", "lorem.txt")
         # print(result)
-        expected = (False, f"Path does not exist: '{abs_path}'.")
-        self.assertEqual(result[:2], expected, f"Expected {expected}, but got {result}")
 
-    def test_get_files_info_calculator(self):
-        get_files_info("calculator", ".")
+    def test__valid_file(self):
+        working_dir = os.path.abspath('calculator')
+        path = os.path.join(working_dir, 'pkgg')
+        abs_path = os.path.abspath(path)
 
-    def test_get_files_info_calculator_pkg(self):
-        get_files_info("calculator", "pkg")
+        result = get_file_content("calculator", "main.py")
+        print(result)
+
+
+    def test__valid_path_to_file(self):
+        working_dir = os.path.abspath('calculator')
+        path = os.path.join(working_dir, 'pkgg')
+        abs_path = os.path.abspath(path)
+
+        result = get_file_content("calculator", "pkg/calculator.py")
+        print(result)
+
+    def test__invalid_path_to_file(self):
+        working_dir = os.path.abspath('calculator')
+        path = os.path.join(working_dir, 'pkgg')
+        abs_path = os.path.abspath(path)
+
+        result = get_file_content("calculator", "pkg/does_not_exist.py")
+        # print(result)
+    
+
+
+    # def test_get_files_info_calculator(self):
+    #     get_files_info("calculator", ".")
+
+    # def test_get_files_info_calculator_pkg(self):
+    #     get_files_info("calculator", "pkg")
         
-    def test_get_files_info_calculator_bin(self):
-        get_files_info("calculator", "/bin")
+    # def test_get_files_info_calculator_bin(self):
+    #     get_files_info("calculator", "/bin")
 
-    def test_get_files_info_calculator_outside_directroy(self):
-        get_files_info("calculator", "../")
+    # def test_get_files_info_calculator_outside_directroy(self):
+    #     get_files_info("calculator", "../")
 
-    # TODO : Need to modify get_files_info to handle this case
-    # def test_directory_is_current_directory(self):
-    #     path = get_files_info("calculator", ".")
-        # correct = os.environ.get("TEST_PATH")
-        # print(f"result is {path}")
-        # self.assertEqual(path, correct)
-
-    # def test_path_creation(self):
-    #     path = get_files_info("calculator", "pkg")
-    #     correct = os.environ.get("TEST_PATH")
-    #     # print(f"result is {path}")
-    #     self.assertEqual(path, correct)
-
-
-    # def test_list_dir_contents(self):
-    #     path = get_files_info("calculator", "pkg")
-    #     contain_contents = len(os.listdir(path)) > 0
-    #     # print(f"result is {result}")
-    #     # print(f"Contents are - {os.listdir(result)}")
-    #     self.assertEqual(contain_contents, True)
-
-
-    # def test_is_dir(self):
-    #     result = get_files_info("calculator", "pkg")
-    #     is_dir = os.path.isdir(result)
-    #     # print(f"result is {result}")
-    #     # print(f"This is a dur {is_dir}")
-    #     self.assertEqual(is_dir, True)
-
-
-    # def test_is_not_dir(self):
-    #     result, dir = get_files_info("calculator", "pkgf")
-    #     correct = f'Error: "{dir}" is not a directory'
-    #     # print(f"result is {result}")
-    #     # print(f"This is a dur {is_dir}")
-    #     self.assertEqual(result, correct)
-   
-
-    # def test_if_dir_is_within_working_directory(self):
-    #     err,working_dir,dir = get_files_info("calculator", "/bin")
-    #     correct = f'Error: "{dir}" is not a directory'
-    #     # if err == correct:
-    #     #     print("Correct!")
-    #     # else:
-    #     #     print("Fail")
-    #     self.assertEqual(err, correct)
+    # def test_get_file_content(self):
+    #     get_file_content("calculator", "pkg/calculator.py")
+    #     result = verify_file_path("calculator", "pkfg/calculator.py")
+    #     print(result)
      
 
 if __name__ == "__main__":

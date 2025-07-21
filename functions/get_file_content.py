@@ -16,32 +16,31 @@ def get_file_content(working_directory, file_path):
     # It len > 2 it contains a error 
     if len(is_valid[1]) > 0:
         print(is_valid[1])
-        print(f'is_valid = {is_valid}')
+        # print(is_valid)
     else:
        test = read_file(path)
-       print(test)
+       print(test) 
 
     
-
 
 def verify_file_path(working_directory, file_path):
     # dir_content = os.listdir(working_directory)
     file = ""
     if len(file_path.split('/')) > 0:
         file = file_path.split('/')[-1:]
-        print(f'file - {file}')
+        # print(f'file - {file}')
         # dir_contents = os.listdir()
         file_parent_dir = "/".join(file_path.split('/')[:-1])
-        print(f'file_path - {file_path}')
+        # print(f'file_path - {file_path}')
         # print(file)
     try:
         path = os.path.abspath(os.path.join(working_directory,file_parent_dir))
-        print(f'PATH - {path}')
+        # print(f'PATH - {path}')
         path_exists = os.path.exists(path)
         if path_exists:
             try:
                 file_path = path + '/' + file[0]
-                print(f'FINAL FILE PATH - {file_path}')
+                # print(f'FINAL FILE PATH - {file_path}')
                 is_file = os.path.isfile(file_path)
                 if not is_file:
                     return(False, f'Error: File not found or is not a regular file: "{file_path}"')

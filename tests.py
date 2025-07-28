@@ -1,7 +1,7 @@
 import unittest
 from functions.get_files_info import get_files_info, verify_directory_path, restrict_to_working_directory, valid_directory
 from functions.get_file_content import get_file_content, verify_file_path
-from functions.write_file import verify_file_path_w
+from functions.write_file import write_file
 import os
 # from dotenv import load_dotenv
 
@@ -94,24 +94,19 @@ class TestGetFiles(unittest.TestCase):
     #     # print(result)
     
 
-    def test__invalid_path_to_file(self):
-        working_dir = os.path.abspath('calculator')
-        path = os.path.join(working_dir, 'pkgg')
-        abs_path = os.path.abspath(path)
-
-        # # result = verify_file_path_w("calculator", "pkg/does_not_exist.py")
-        # file_path = "pkg/abc/oja".split('/')[0]                      
-        # working_dir_contents = os.listdir(working_dir)
-        # print(working_dir_contents)
-        # print(file_path)
-
-        verify_file_path_w("calculator", "/test") 
-        
-        # print(result[1])
-        # print(result)
-    
-
-
+    def test_write_file_file_exist(self):
+        abs_file_path = os.path.abspath(os.path.join("calculator", "lorem.txt"))
+        result = write_file("calculator", "lorem.txt", "wait, this isn't lorem ipsum")
+        print(result) 
+   
+    def test_write_file_file_not_exist(self):
+        abs_file_path = os.path.abspath(os.path.join("calculator", "lorem.txt"))
+        result = write_file("calculator", "pkg/morelorem.txt", "lorem ipsum dolor sit amet")
+        print(result) 
+    def test_write_file_file_not_allowed(self):
+        abs_file_path = os.path.abspath(os.path.join("calculator", "lorem.txt"))
+        result = write_file("calculator", "/tmp/temp.txt", "this should not be allowed")
+        print(result) 
 
     # def test_get_files_info_calculator(self):
     #     get_files_info("calculator", ".")

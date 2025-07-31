@@ -1,5 +1,6 @@
 from functions.get_file_content import verify_file_path
 import os
+from google.genai import types
 
 
 def write_file(working_directory, file_path, content):
@@ -26,8 +27,23 @@ def write_file(working_directory, file_path, content):
         f.write(content)
     return(f'Successfully wrote to "{file_path}" ({len(content)} characters written)')    
 
-
-
+schema_write_file = types.FunctionDeclaration(
+    name="write_file",
+    description="Write to the file specified by file path provided and constrained within the working directory. Use the content to write to the file",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The directory to list files from, relative to the working directory. If not provided, lists files in the working directory itself.",
+            ),
+            "content": types.Schema(
+                type=types.Type.STRING,
+                description="This is the content that will be written to the python file provided"
+            ),
+        },
+    ),
+)
 
     
 

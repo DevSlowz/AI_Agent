@@ -1,5 +1,5 @@
 import os
-
+from google.genai import types
 # Need to ensure the provided file_path is withing the bounds of the working_directory
 # pkg/calculator.py is a valid path and we must structure the path to accomodate this
 
@@ -65,3 +65,18 @@ def read_file(file_path):
             return(f"{(file_content_string)}{f'[...File "{file_path}" truncated at 10000 characters]'}")
             
     return file_content_string
+
+
+schema_get_file_content = types.FunctionDeclaration(
+    name="get_file_content",
+    description="Read file content of the specified based on the file path provided and constrained within the working directory",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The file path to the file to read the content from, relative to the working directory"
+            ),
+        },
+    ),
+)

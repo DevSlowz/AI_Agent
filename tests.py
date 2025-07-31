@@ -2,6 +2,7 @@ import unittest
 from functions.get_files_info import get_files_info, verify_directory_path, restrict_to_working_directory, valid_directory
 from functions.get_file_content import get_file_content, verify_file_path
 from functions.write_file import write_file
+from functions.run_python import run_python_file
 import os
 # from dotenv import load_dotenv
 
@@ -94,20 +95,46 @@ class TestGetFiles(unittest.TestCase):
     #     # print(result)
     
 
-    def test_write_file_file_exist(self):
-        abs_file_path = os.path.abspath(os.path.join("calculator", "lorem.txt"))
-        result = write_file("calculator", "lorem.txt", "wait, this isn't lorem ipsum")
-        print(result) 
+    # def test_write_file_file_exist(self):
+    #     abs_file_path = os.path.abspath(os.path.join("calculator", "lorem.txt"))
+    #     result = write_file("calculator", "lorem.txt", "wait, this isn't lorem ipsum")
+    #     print(result) 
    
-    def test_write_file_file_not_exist(self):
-        abs_file_path = os.path.abspath(os.path.join("calculator", "lorem.txt"))
-        result = write_file("calculator", "pkg/morelorem.txt", "lorem ipsum dolor sit amet")
-        print(result) 
-    def test_write_file_file_not_allowed(self):
-        abs_file_path = os.path.abspath(os.path.join("calculator", "lorem.txt"))
-        result = write_file("calculator", "/tmp/temp.txt", "this should not be allowed")
-        print(result) 
+    # def test_write_file_file_not_exist(self):
+    #     abs_file_path = os.path.abspath(os.path.join("calculator", "lorem.txt"))
+    #     result = write_file("calculator", "pkg/morelorem.txt", "lorem ipsum dolor sit amet")
+    #     print(result) 
+    # def test_write_file_file_not_allowed(self):
+    #     abs_file_path = os.path.abspath(os.path.join("calculator", "lorem.txt"))
+    #     result = write_file("calculator", "/tmp/temp.txt", "this should not be allowed")
+    #     print(result)
+    # 
+    #  
 
+
+    # def test_write_file_file_exist(self):
+    #     abs_file_path = os.path.abspath(os.path.join("calculator", "lorem.txt"))
+    #     result = run_python_file("calculator", "main.py") 
+    #     print(result) 
+   
+    # def test_write_file_file_not_exist(self):
+    #     abs_file_path = os.path.abspath(os.path.join("calculator", "lorem.txt"))
+    #     result = run_python_file("calculator", "main.py", ["3 + 5"])
+    #     print(result) 
+    # def test_write_file_file_not_allowed(self):
+    #     abs_file_path = os.path.abspath(os.path.join("calculator", "lorem.txt"))
+    #     result = run_python_file("calculator", "tests.py")
+    #     print(result)
+        
+    # def test_write_file_file_not_allowed2(self):
+    #     abs_file_path = os.path.abspath(os.path.join("calculator", "lorem.txt"))
+    #     result = get_files_info({'directory': '.'})
+    #     print(result) 
+
+    # def test_write_file_file_not_allowed3(self):
+    #     abs_file_path = os.path.abspath(os.path.join("calculator", "lorem.txt"))
+    #     result = get_files_info({'directory': 'pkg'})
+    #     print(result)  
     # def test_get_files_info_calculator(self):
     #     get_files_info("calculator", ".")
 

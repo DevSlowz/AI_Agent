@@ -26,6 +26,7 @@ When a user asks a question or makes a request, make a function call plan. You c
 - Write or overwrite files
 
 All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
+Do no
 """
 avaliable_functions = types.Tool(
     function_declarations=[
@@ -49,20 +50,43 @@ def call_function(function_call_part, verbose=False):
     if verbose == False:
         for function_call_part in function_call_part.function_calls:
             print(f" - Calling function: {function_call_part.name}")
-        return
+        # return
 
+    print(f"Function calls are: {function_call_part}")
     for function_call_part in function_call_part.function_calls:
         function_call_part.args['working_directory'] = './calculator'
         print(f"Calling function: {function_call_part.name}({function_call_part.args})")
-        name = function_call_part.name
+        function_name = function_call_part.name
         args = function_call_part.args
     
-    print(name)
-    print(args)
-    # result = eval(f'{name}({**args})')
-    # print(result)
-    result = avaliable_function_calls[name](working_directory='./calculator', file_path=args['file_path'], content=args['content'])
-    print(result)
+    print(f'This is the name of the function in call_function: {function_name}')
+    print(f"These are the arguments in call_function: {args}")
+    # print(type(args))
+
+    if function_name not in avaliable_function_calls:
+        return types.Content(
+            role="tool",
+            parts=[
+                types.Part.from_function_response(
+                    name=function_name,
+                    response={"error": f"Unknown function: {function_name}"},
+                )
+            ],
+        )
+
+    # function_result = avaliable_function_calls[function_name](working_directory=args['working_directory'], file_path=args['file_path'], content=args['content'])
+    function_result = avaliable_function_calls[function_name](**args)
+
+    print(function_result)
+    return types.Content(
+        role="tool",
+        parts=[
+            types.Part.from_function_response(
+                name=function_name,
+                response={"result": function_result},
+            )
+        ],
+    )
 def main():
 
     # Load enviorment variables
@@ -116,13 +140,25 @@ def generate_content(client, messages, verbose):
     if verbose:
         print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
         print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
-        call_function(response, verbose)
+        result = call_function(response, verbose)
+        try:
+            print(f"-> {result.parts[0].function_response.response}")
+            return
+        except Exception as e:
+            raise Exception(e)
 
     if not response.function_calls:
         return response.text
 
-    call_function(response)
-    
+    # print(f"The response I am passing is : {response}")
+    result = call_function(response)
+    print(f"The result is {result}")
+
+    try:
+        print(result.parts[0].function_response.response)
+        return
+    except Exception as e:
+        raise Exception(e)
 
     # print(response.text)
     

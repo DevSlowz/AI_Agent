@@ -26,7 +26,7 @@ When a user asks a question or makes a request, make a function call plan. You c
 - Write or overwrite files
 
 All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
-
+Analzye imports in files to understand where code it coming from to fix the root issue. The issue will not alaways be in the file you initally look in. When in each file check for logic issues and other bugs and correct them based on provided prompt
 """
 avaliable_functions = types.Tool(
     function_declarations=[

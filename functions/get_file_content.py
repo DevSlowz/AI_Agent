@@ -2,81 +2,38 @@ import os
 from google.genai import types
 # Need to ensure the provided file_path is withing the bounds of the working_directory
 # pkg/calculator.py is a valid path and we must structure the path to accomodate this
+MAX_CHARS = 10000
 
 def get_file_content(working_directory, file_path):
-    dir_content = os.listdir(working_directory)
-    path = os.path.join(working_directory,file_path)
-    is_file = os.path.isfile(path)
-    # print(dir_content)
-    # print(f"PATH = {path}")
-    # print(is_file)
-
-    is_valid = verify_file_path(working_directory, file_path)
-
-    # It len > 2 it contains a error 
-    if len(is_valid[1]) > 0:
-        print(is_valid[1])
-        # print(is_valid)
-    else:
-       test = read_file(path)
-       print(test) 
-
-    
-
-def verify_file_path(working_directory, file_path):
-    # dir_content = os.listdir(working_directory)
-    file = ""
-    if len(file_path.split('/')) > 0:
-        file = file_path.split('/')[-1:]
-        # print(f'file - {file}')
-        # dir_contents = os.listdir()
-        file_parent_dir = "/".join(file_path.split('/')[:-1])
-        # print(f'file_path - {file_path}')
-        # print(file)
+    abs_working_dir = os.path.abspath(working_directory)
+    abs_file_path = os.path.abspath(os.path.join(working_directory, file_path))
+    if not abs_file_path.startswith(abs_working_dir):
+        return f'Error: Cannot read "{file_path}" as it is outside the permitted working directory'
+    if not os.path.isfile(abs_file_path):
+        return f'Error: File not found or is not a regular file: "{file_path}"'
     try:
-        path = os.path.abspath(os.path.join(working_directory,file_parent_dir))
-        # print(f'PATH - {path}')
-        path_exists = os.path.exists(path)
-        if path_exists:
-            try:
-                file_path = path + '/' + file[0]
-                # print(f'FINAL FILE PATH - {file_path}')
-                is_file = os.path.isfile(file_path)
-                if not is_file:
-                    return(False, f'Error: File not found or is not a regular file: "{file_path}"')
-            except Exception as e:
-                return(False, f'Error: {e}')
-        else:
-            return(False, f'Error: Cannot read "{file_path}" as it is outside the permitted working directory eeee')
+        with open(abs_file_path, "r") as f:
+            content = f.read(MAX_CHARS)
+            if os.path.getsize(abs_file_path) > MAX_CHARS:
+                content += (
+                    f'[...File "{file_path}" truncated at {MAX_CHARS} characters]'
+                )
+        return content
     except Exception as e:
-        return(False, f'Error: {e}')
-    
-    
-    return(True, "")
-
-
-def read_file(file_path):
-    MAX_CHARS = 10000
-    
-    with open(file_path, "r") as f:
-        file_content_string = f.read(MAX_CHARS)
-
-        if f.read(1):
-            return(f"{(file_content_string)}{f'[...File "{file_path}" truncated at 10000 characters]'}")
-            
-    return file_content_string
+        return f'Error reading file "{file_path}": {e}'
 
 
 schema_get_file_content = types.FunctionDeclaration(
     name="get_file_content",
-    description="Read file content of the specified based on the file path provided and constrained within the working directory",
+    description=f"Reads and returns the first {MAX_CHARS} characters of the content from a specified file within the working directory.",
     parameters=types.Schema(
         type=types.Type.OBJECT,
         properties={
             "file_path": types.Schema(
                 type=types.Type.STRING,
-                description="The file path to the file to read the content from, relative to the working directory"
+                description="The path to the file whose content should be read, relative to the working directory.",
             ),
         },
+        required=["file_path"],
     ),
 )

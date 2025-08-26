@@ -26,7 +26,7 @@ When a user asks a question or makes a request, make a function call plan. You c
 - Write or overwrite files
 
 All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
-Do no
+
 """
 avaliable_functions = types.Tool(
     function_declarations=[
@@ -47,20 +47,23 @@ avaliable_function_calls = {
 def call_function(function_call_part, verbose=False):
     name = ""
     args = ""
-    if verbose == False:
-        for function_call_part in function_call_part.function_calls:
-            print(f" - Calling function: {function_call_part.name}")
-        # return
-
-    print(f"Function calls are: {function_call_part}")
-    for function_call_part in function_call_part.function_calls:
-        function_call_part.args['working_directory'] = './calculator'
-        print(f"Calling function: {function_call_part.name}({function_call_part.args})")
-        function_name = function_call_part.name
-        args = function_call_part.args
+    if verbose:
+        print(f" - Calling function: {function_call_part.name}({function_call_part.args})")
+    else:
+        print(f" - Calling function: {function_call_part.name}")
     
-    print(f'This is the name of the function in call_function: {function_name}')
-    print(f"These are the arguments in call_function: {args}")
+    # Access the name and args directly
+
+    # print(f"Function calls are: {function_call_part}")
+    # for func_call_part in function_call_part:
+    # print(f"This is the func call part - {function_call_part}")
+    function_call_part.args['working_directory'] = './calculator'
+    print(f"Calling function: {function_call_part.name}({function_call_part.args})")
+    function_name = function_call_part.name
+    args = function_call_part.args
+    
+    # print(f'This is the name of the function in call_function: {function_name}')
+    # print(f"These are the arguments in call_function: {args}")
     # print(type(args))
 
     if function_name not in avaliable_function_calls:
@@ -77,7 +80,7 @@ def call_function(function_call_part, verbose=False):
     # function_result = avaliable_function_calls[function_name](working_directory=args['working_directory'], file_path=args['file_path'], content=args['content'])
     function_result = avaliable_function_calls[function_name](**args)
 
-    print(function_result)
+    # print(function_result)
     return types.Content(
         role="tool",
         parts=[
@@ -87,6 +90,53 @@ def call_function(function_call_part, verbose=False):
             )
         ],
     )
+
+
+
+
+def generate_content(client, messages, verbose):
+    # Make the API call
+    response = client.models.generate_content(
+        model='gemini-2.0-flash-001', 
+        contents=messages,
+        config=types.GenerateContentConfig(
+            tools=[avaliable_functions], 
+            system_instruction=system_prompt
+        ),
+    )
+    
+    if verbose:
+        print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
+        print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+    
+    # Add the model's response to the conversation
+    for candidate in response.candidates:
+        # print(f"Candidate - {candidate.content.parts}")
+        messages.append(candidate.content)
+    
+    # Check if this is a final response (no function calls)
+    if not response.function_calls:
+        print(f"Response.text - {response.text}")
+        return response.text  # We're done!
+    
+    # Process each function call
+    function_responses = []
+    for function_call_part in response.function_calls:
+        if verbose:
+            print(f" - Calling function: {function_call_part.name}")
+        
+        # Call your function and get the result
+        function_result = call_function(function_call_part, verbose)
+        
+        # Extract the function response part
+        function_responses.append(function_result.parts[0])
+    
+    # Add function results to the conversation
+    messages.append(types.Content(role="user", parts=function_responses))
+    
+    # Return None to indicate we need another iteration
+    return None
+    
 def main():
 
     # Load enviorment variables
@@ -120,51 +170,26 @@ def main():
     messages = [
         types.Content(role="user", parts=[types.Part(text=user_prompt)]),
     ]
-    generate_content(client,messages,verbose)
-
-
-
-def generate_content(client, messages, verbose):
-    # Generate reponse based on messages argument
-    response = client.models.generate_content(
-        model='gemini-2.0-flash-001', 
-        contents=messages,
-        config=types.GenerateContentConfig(
-            tools=[avaliable_functions], system_instruction=system_prompt
-        ),
-        
-    )
-
-    print("Response:")
-
-    if verbose:
-        print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-        print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
-        result = call_function(response, verbose)
-        try:
-            print(f"-> {result.parts[0].function_response.response}")
-            return
-        except Exception as e:
-            raise Exception(e)
-
-    if not response.function_calls:
-        return response.text
-
-    # print(f"The response I am passing is : {response}")
-    result = call_function(response)
-    print(f"The result is {result}")
-
-    try:
-        print(result.parts[0].function_response.response)
-        return
-    except Exception as e:
-        raise Exception(e)
-
-    # print(response.text)
+    # generate_content_result = generate_content(client,messages,verbose)
     
+    # for item in generate_content_result.candidates:
+    #     # print(f"Item Content: {item.content}")
+    #     messages.append(item.content)
 
+    # print(messages)
 
+    for i in range(20):
+        try:
+            final_response = generate_content(client, messages, verbose)
+            if final_response:  # If we got a final text response
+                print("Final response:")
+                print(final_response)
+                break
+        except Exception as e:
+            print(f"Error: {e}")
+            break
 
+ 
 
 if __name__ == "__main__":
     main()

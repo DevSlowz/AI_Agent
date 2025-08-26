@@ -1,4 +1,4 @@
-from functions.get_file_content import verify_file_path
+
 import os
 from google.genai import types
 
